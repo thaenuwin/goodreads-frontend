@@ -1,25 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { Provider } from 'mobx-react';
+import { Route, BrowserRouter as Router,Routes,useRoutes } from 'react-router-dom';
+import ProtectedRoute from 'components/common/ProtectedRoute';
+import Login from 'modules/Login';
+import Home from 'modules/Home/index';
+import About from 'modules/About/index';
+import stores from 'stores';
+// import {ROUTES} from 'definitions';
+import MainLayout from 'components/MainLayout'
 
-function App() {
+// ...
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Provider {...stores}>
+        <Routes>
+        <Route path='/' element={<Login />} />
+        <Route  element={<MainLayout />}>
+          <Route path="/home"  element={<Home />} />
+          <Route path='/about' element={<About />} />
+        </Route>
+        </Routes>
+    </Provider>
+  )
 }
 
-export default App;
