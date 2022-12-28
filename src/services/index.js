@@ -1,4 +1,3 @@
-import { isBrowser } from 'react-device-detect';
 
 import AuthServices from './auth';
 import Http from './http';

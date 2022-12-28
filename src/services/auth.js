@@ -15,18 +15,7 @@ export default class AuthServices {
   }
 
   login = (payload) => axios.post(`http://localhost:9999/login`, payload);
-
-  forgotPassword = (payload) =>
-    axios.post(`${isBrowser ? window.__ENV.REACT_APP_UAC_SERVER : window.__ENV.REACT_APP_UAC_SERVER_MOBILE}/uac/reset-my-forget-password-with-userid`, payload);
-
-  refreshToken = (payload) => this.http.post(`/refresh`, payload);
-
-  logout = () => this.http.removeTokens();
   getAccessToken = () => this.http.getAccessToken();
   getRefreshToken = () => this.http.getRefreshToken();
 
-  setPasswordExpiryStatus = (value) =>
-    localStorage.setItem(`${isBrowser ? window.__ENV.REACT_APP_APP_NAME : window.__ENV.REACT_APP_APP_NAME_MOBILE}_IS_PASSWORD_EXPIRED`, value);
-
-  getPasswordExpiryStatus = () => localStorage.getItem(`${isBrowser ? window.__ENV.REACT_APP_APP_NAME : window.__ENV.REACT_APP_APP_NAME_MOBILE}_IS_PASSWORD_EXPIRED`);
-}
+ }

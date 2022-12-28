@@ -1,6 +1,5 @@
 // import { ROUTES } from 'definitions';
-import { includes } from 'lodash';
-import { isBrowser } from 'react-device-detect'
+
 import axios from 'axios';
 import stores from 'stores';
 
@@ -43,49 +42,18 @@ export default class Http {
         const {
           response: { status = null },
         } = error;
-        const originalRequest = error.config;
 
         switch (status) {
           case 404:
             // window.location = `/404`;
             break;
           case 401:
-            return stores.authStore
-              .refreshToken()
-              .then((res) => {
-                stores.authStore.setTokens(res);
-                originalRequest.headers['Authorization'] = `Bearer ${res.access_token}`;
-                return axios.request(originalRequest);
-              })
-              .catch((err) => Promise.reject(err));
-          case 400:
-            if (error.response.data.error_description === 'ERROR_DUPLICATE_TEMPLATE_NAME') {
-              stores.errorStore.setError('Template already exist with this name . Please use another name.  ');
-            }
-            if (error.response.data.error_description === 'ERROR_DUPLICATE_EMAIL_WITH_OTHER_USER') {
-              stores.errorStore.setError('Email has been used by other users. Please put another email address.');
-            }
-            if (error.response.data.error_description === 'ERROR_DUPLICATE_USER_FOUND') {
-              stores.errorStore.setError('Login id has been used by other users. Please use another login id.')
-            }
-            if (includes(originalRequest.url, isBrowser ? window.__ENV.REACT_APP_PIDS_REFRESH_PATH : window.__ENV.REACT_APP_PIDS_REFRESH_PATH_MOBILE)) {
-              sessionStorage.setItem('REDIRECT', window.location.pathname);
-              window.location = '/login';
-            } else {
-              return Promise.reject(error);
-            }
-
-            break;
-          case 403:
-            sessionStorage.setItem('REDIRECT', window.location.pathname);
-            // localStorage.removeItem(`${APP_NAME}_TOKENS`);
-            stores.errorStore.setError(error.response.data.error_description || 'Error');
-            // window.location = `${window.location.origin}/${ROUTES.LOGIN}`;
-            return Promise.reject(error);
-          case 408:
-            this.removeTokens();
+            stores.errorStore.setError('Your token is expired now. Please login again!');
             window.location = '/login';
             return Promise.reject(error);
+          case 400:
+              return Promise.reject(error);
+          
           case 500:
             if (error.response.data.error_class === 'SQLException' || error.response.data.error_class === 'TransactionSystemException') {
               stores.errorStore.setError('Internal Server Error!');
@@ -112,14 +80,7 @@ export default class Http {
     return tokens.accessToken;
   };
 
-  getRefreshToken = () => {
-    if (!this.getAuthTokens()) {
-      return null;
-    }
 
-    const tokens = JSON.parse(this.getAuthTokens());
-    return tokens.refreshToken || null;
-  };
 
   setTokens = (tokens) => {
     localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
@@ -127,7 +88,7 @@ export default class Http {
 
   removeTokens = () => {
     // localStorage.removeItem(TOKENS_KEY);
-    localStorage.removeItem(`${isBrowser ? window.__ENV.REACT_APP_APP_NAME : window.__ENV.REACT_APP_APP_NAME_MOBILE}_IS_PASSWORD_EXPIRED`);
+    localStorage.removeItem('TOKENS');
   };
 
   authenticatedHeader = () => {

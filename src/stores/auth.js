@@ -25,8 +25,7 @@ class AuthStore {
 
   setTokens = (data) =>
     this.api.http.setTokens({
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
+      accessToken: data.access_token
     });
 
   forgotPassword = (payload) => {
@@ -40,25 +39,7 @@ class AuthStore {
     });
   };
 
-  refreshToken = () => {
-    return new Promise((resolve, reject) => {
-      this.api
-        .refreshToken({ refresh_token: this.getRefreshToken() })
-        .then((res) => {
-          this.source = false;
-          resolve(res);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-      // if (!this.source) {
-      //   this.source = true;
-      // } else {
-      //   // reject({ response: { message: 'Refresh token' } });
-      //   resolve();
-      // }
-    });
-  };
+ 
 
   setIfPasswordExpired = () => {};
 
@@ -67,7 +48,7 @@ class AuthStore {
   };
 
   getAccessToken = () => this.api.getAccessToken();
-  getRefreshToken = () => this.api.getRefreshToken();
+  
 
   // checkIfPasswordExpired = () => {
   //   const status = this.api.getPasswordExpiryStatus();
